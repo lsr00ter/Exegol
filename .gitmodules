@@ -1,6 +1,6 @@
 [submodule "exegol-images"]
 	path = exegol-images
-	url = https://github.com/ThePorgs/Exegol-images.git
+	url = https://github.com/lsr00ter/Exegol-images.git
 	branch = main
 [submodule "exegol-resources"]
 	path = exegol-resources
