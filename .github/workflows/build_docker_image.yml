@@ -1,0 +1,57 @@
+name: Build Exegol Docker Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_profile:
+        description: "Build profile"
+        required: true
+        default: "full"
+        type: choice
+        options:
+          - full
+          - light
+          - web
+          - ad
+          - osint
+
+jobs:
+  build:
+    name: Build Exegol ${{ github.event.inputs.build_profile }} image
+    runs-on: ubuntu-latest
+    timeout-minutes: 720
+    steps:
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          sudo apt-get clean
+          df -h
+
+      - name: Get latest Exegol-images release tag
+        id: release
+        run: |
+          TAG=$(curl -s https://api.github.com/repos/lsr00ter/Exegol-images/releases/latest | jq -r .tag_name)
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Latest release: $TAG"
+
+      - name: Checkout Exegol-images at latest release
+        uses: actions/checkout@v4
+        with:
+          repository: lsr00ter/Exegol-images
+          ref: ${{ steps.release.outputs.tag }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: exegol:${{ steps.release.outputs.tag }}-${{ github.event.inputs.build_profile }}
+          build-args: |
+            TAG=${{ steps.release.outputs.tag }}
+            VERSION=${{ steps.release.outputs.tag }}
+            BUILD_PROFILE=${{ github.event.inputs.build_profile }}
+          platforms: linux/amd64
