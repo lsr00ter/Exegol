@@ -1,7 +1,7 @@
 [submodule "exegol-images"]
 	path = exegol-images
 	url = https://github.com/lsr00ter/Exegol-images.git
-	branch = fix/mdcat-install
+	branch = feat/local-build
 [submodule "exegol-resources"]
 	path = exegol-resources
 	url = https://github.com/ThePorgs/Exegol-resources
